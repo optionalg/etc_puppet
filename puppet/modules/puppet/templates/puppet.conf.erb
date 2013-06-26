@@ -1,0 +1,37 @@
+[main]
+    user = puppet
+    group = puppet
+    report = true
+    reports = log,store
+    logdir=/var/log/puppet
+    vardir=/var/lib/puppet
+    ssldir=/var/lib/puppet/ssl
+    rundir=/var/run/puppet
+    factpath=$vardir/lib/facter
+    templatedir=$confdir/templates
+    modulepath = $confdir/environments/$environment/modules:$confdir/modules
+
+[master]
+    certname = <%= @puppetserver %>
+    storeconfigs = true
+    # These are needed when the puppetmaster is run by passenger                          
+    # and can safely be removed if webrick is used.
+    # ssl_client_header = SSL_CLIENT_S_DN 
+    ssl_client_verify_header = SSL_CLIENT_VERIFY
+    # Add the following line when you are using the load balanced, 
+    # worker+CA configuration. Probably might not have been able to
+    # figure this out without. 
+    # https://groups.google.com/d/msg/puppet-users/eQpr0-zd3dM/PJt_eVvvh9gJ
+    ssl_client_header = HTTP_X_SSL_SUBJECT                
+
+
+[agent]
+    pluginsync = false
+    report = true
+    server = <%= @puppetserver %>
+
+[development]
+    manifest = $confdir/manifests/site.pp
+
+[testing]
+   manifest = $confdir/manifests/site.pp
